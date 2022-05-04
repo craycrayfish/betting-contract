@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.6.6;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -9,7 +9,7 @@ contract Bookie is Ownable {
     uint256[] public bet_outcomes;
     uint256[] public bet_amounts;
     uint256[] public outcome_pool;
-    uint256[] public no_outcomes;
+    uint256 public no_outcomes;
 
     enum STATE {
         BETTING_CLOSED,
@@ -22,7 +22,7 @@ contract Bookie is Ownable {
         // Initialises variables
     }
 
-    function get_game_state() {
+    function get_game_state() public {
         // Call chainlink node to get live results
     }
 
@@ -35,7 +35,7 @@ contract Bookie is Ownable {
         require(_outcome < no_outcomes, "Selected outcome not valid");
     }
 
-    function calculate_payout(address _address) returns (uint256) {
+    function calculate_payout(address _address) private returns (uint256) {
         // Calculates payout for a given address
         // Naive approach: split pot among winners proportional to amount bet
     }
