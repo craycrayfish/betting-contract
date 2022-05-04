@@ -1,1 +1,2 @@
 # betting-contract
+This is a repo to create a contract that facilitates betting on an event with multiple discrete outcomes. Chainlink will be used to get the outcome of the event to determine winners.
