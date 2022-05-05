@@ -10,6 +10,7 @@ contract Bookie is Ownable {
     uint256[] public bet_outcomes;
     uint256[] public bet_amounts;
     uint256 public no_outcomes;
+    mapping(uint256 => uint256) public outcome_total;
     mapping(uint256 => uint256) public payouts;
 
     enum STATE {
@@ -39,10 +40,14 @@ contract Bookie is Ownable {
         // Calculates the live payouts based on bets placed on each outcome
     }
 
+    function add_outcome() public onlyOwner {
+        no_outcomes += 1;
+    }
+
     function place_bet(uint256 _outcome) public payable {
         // Saves the bets made by the player
         require(state != STATE.CLOSED, "Betting not allowed now");
-        require(_outcome < no_outcomes, "Selected outcome not valid");
+        require(_outcome <= no_outcomes, "Selected outcome not valid");
         require(msg.value > 0, "Bet value must be greater than 0");
 
         bets[msg.sender].push(no_bets);
@@ -54,6 +59,23 @@ contract Bookie is Ownable {
     function calculate_payout(address _address) private returns (uint256) {
         // Calculates payout for a given address
         // Naive approach: split pot among winners proportional to amount bet
+    }
+
+    function get_bets(address _address)
+        public
+        view
+        returns (uint256[] memory, uint256[] memory)
+    {
+        // Returns bets placed by an address
+        uint256[] memory indices = bets[_address];
+        uint256[] memory bettor_outcomes = new uint256[](indices.length);
+        uint256[] memory bettor_amounts = new uint256[](indices.length);
+        for (uint256 i = 0; i < indices.length; i++) {
+            uint256 idx = indices[i];
+            bettor_outcomes[i] = bet_outcomes[idx];
+            bettor_amounts[i] = bet_amounts[idx];
+        }
+        return (bettor_outcomes, bettor_amounts);
     }
 
     function claim_payout() public payable {
