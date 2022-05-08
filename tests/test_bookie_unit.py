@@ -1,4 +1,4 @@
-from scripts.utils import (
+from scripts.helpful_scripts import (
     get_account,
 )
 from brownie import exceptions
@@ -14,3 +14,6 @@ def test_create_outcome_and_place_bet(check_local_blockchain_envs, bookie_contra
     bookie_contract.add_outcome({"from": account})
     bookie_contract.place_bet(bet_outcome, {"from": account, "value": bet_value})
     assert bookie_contract.get_bets(account) == ((bet_outcome,), (bet_value,))
+
+
+def test_create
