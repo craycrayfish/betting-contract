@@ -1,17 +1,24 @@
 dependencies:
-  - OpenZeppelin/openzeppelin-contracts@3.4.0
+  - OpenZeppelin/openzeppelin-contracts@4.6.0
   - smartcontractkit/chainlink-brownie-contracts@0.4.0
-
 
 compiler:
   solc:
     remappings:
-      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.4.0'
-      "@chainlink=smartcontractkit/chainlink-brownie-contracts@0.4.0"
+      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.6.0'
+      - "@chainlink=smartcontractkit/chainlink-brownie-contracts@0.4.0"
 
 dotenv: .env
+
 networks:
   default: development
+  development:
+    fee: 100000000000000000
+  kovan:
+    link_address: 0xa36085F69e2889c224210F603D836748e7dC0088
+    oracle_address: 0xfF07C97631Ff3bAb5e5e5660Cdf47AdEd8D4d4Fd
+    job_id: 6204814e29e94813b6fc8444ce028e07
+    fee: 100000000000000000
 
 wallets:
   from_key: ${PRIVATE_KEY}

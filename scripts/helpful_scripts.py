@@ -2,8 +2,6 @@ from brownie import (
     network,
     accounts,
     config,
-    LinkToken,
-    MockOracle,
     Contract,
     web3,
 )
@@ -23,10 +21,10 @@ BLOCK_CONFIRMATIONS_FOR_VERIFICATION = (
     1 if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS else 6
 )
 
-contract_to_mock = {
-    "link_token": LinkToken,
-    "oracle": MockOracle,
-}
+# contract_to_mock = {
+#     "link_token": LinkToken,
+#     "oracle": MockOracle,
+# }
 
 DECIMALS = 18
 INITIAL_VALUE = web3.toWei(2000, "ether")
@@ -98,56 +96,56 @@ def fund_with_link(
     return tx
 
 
-def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
-    """
-    Use this script if you want to deploy mocks to a testnet
-    """
-    print(f"The active network is {network.show_active()}")
-    print("Deploying Mocks...")
-    account = get_account()
-    print("Deploying Mock Link Token...")
-    link_token = LinkToken.deploy({"from": account})
-    print("Deploying Mock Price Feed...")
-    mock_price_feed = MockV3Aggregator.deploy(
-        decimals, initial_value, {"from": account}
-    )
-    print(f"Deployed to {mock_price_feed.address}")
-    print("Deploying Mock VRFCoordinator...")
-    mock_vrf_coordinator = VRFCoordinatorV2Mock.deploy(
-        BASE_FEE, GAS_PRICE_LINK, {"from": account}
-    )
-    print(f"Deployed to {mock_vrf_coordinator.address}")
+# def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
+#     """
+#     Use this script if you want to deploy mocks to a testnet
+#     """
+#     print(f"The active network is {network.show_active()}")
+#     print("Deploying Mocks...")
+#     account = get_account()
+#     print("Deploying Mock Link Token...")
+#     link_token = LinkToken.deploy({"from": account})
+#     print("Deploying Mock Price Feed...")
+#     mock_price_feed = MockV3Aggregator.deploy(
+#         decimals, initial_value, {"from": account}
+#     )
+#     print(f"Deployed to {mock_price_feed.address}")
+#     print("Deploying Mock VRFCoordinator...")
+#     mock_vrf_coordinator = VRFCoordinatorV2Mock.deploy(
+#         BASE_FEE, GAS_PRICE_LINK, {"from": account}
+#     )
+#     print(f"Deployed to {mock_vrf_coordinator.address}")
 
-    print("Deploying Mock Oracle...")
-    mock_oracle = MockOracle.deploy(link_token.address, {"from": account})
-    print(f"Deployed to {mock_oracle.address}")
-    print("Mocks Deployed!")
+#     print("Deploying Mock Oracle...")
+#     mock_oracle = MockOracle.deploy(link_token.address, {"from": account})
+#     print(f"Deployed to {mock_oracle.address}")
+#     print("Mocks Deployed!")
 
 
-def listen_for_event(brownie_contract, event, timeout=200, poll_interval=2):
-    """Listen for an event to be fired from a contract.
-    We are waiting for the event to return, so this function is blocking.
-    Args:
-        brownie_contract ([brownie.network.contract.ProjectContract]):
-        A brownie contract of some kind.
-        event ([string]): The event you'd like to listen for.
-        timeout (int, optional): The max amount in seconds you'd like to
-        wait for that event to fire. Defaults to 200 seconds.
-        poll_interval ([int]): How often to call your node to check for events.
-        Defaults to 2 seconds.
-    """
-    web3_contract = web3.eth.contract(
-        address=brownie_contract.address, abi=brownie_contract.abi
-    )
-    start_time = time.time()
-    current_time = time.time()
-    event_filter = web3_contract.events[event].createFilter(fromBlock="latest")
-    while current_time - start_time < timeout:
-        for event_response in event_filter.get_new_entries():
-            if event in event_response.event:
-                print("Found event!")
-                return event_response
-        time.sleep(poll_interval)
-        current_time = time.time()
-    print("Timeout reached, no event found.")
-    return {"event": None}
+# def listen_for_event(brownie_contract, event, timeout=200, poll_interval=2):
+#     """Listen for an event to be fired from a contract.
+#     We are waiting for the event to return, so this function is blocking.
+#     Args:
+#         brownie_contract ([brownie.network.contract.ProjectContract]):
+#         A brownie contract of some kind.
+#         event ([string]): The event you'd like to listen for.
+#         timeout (int, optional): The max amount in seconds you'd like to
+#         wait for that event to fire. Defaults to 200 seconds.
+#         poll_interval ([int]): How often to call your node to check for events.
+#         Defaults to 2 seconds.
+#     """
+#     web3_contract = web3.eth.contract(
+#         address=brownie_contract.address, abi=brownie_contract.abi
+#     )
+#     start_time = time.time()
+#     current_time = time.time()
+#     event_filter = web3_contract.events[event].createFilter(fromBlock="latest")
+#     while current_time - start_time < timeout:
+#         for event_response in event_filter.get_new_entries():
+#             if event in event_response.event:
+#                 print("Found event!")
+#                 return event_response
+#         time.sleep(poll_interval)
+#         current_time = time.time()
+#     print("Timeout reached, no event found.")
+#     return {"event": None}

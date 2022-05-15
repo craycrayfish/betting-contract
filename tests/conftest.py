@@ -2,7 +2,7 @@ from brownie import network
 from scripts.deploy import deploy_bookie
 import pytest
 
-from scripts.utils import LOCAL_BLOCKCHAIN_ENVIRONMENTS
+from scripts.helpful_scripts import LOCAL_BLOCKCHAIN_ENVIRONMENTS
 
 
 @pytest.fixture()

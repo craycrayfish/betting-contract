@@ -1,18 +1,12 @@
-prgama solidity ^0.6.6
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
-contract TherundownConsumer is ChainlinkClient {
-    using Chainlink for Chainlink.Request
+contract ChainlinkConsumer is ChainlinkClient {
+    using Chainlink for Chainlink.Request;
 
     /* ========== CONSUMER STATE VARIABLES ========== */
-
-    struct GameCreate {
-        bytes32 gameId;
-        uint256 startTime;
-        string homeTeam;
-        string awayTeam;
-    }
 
     struct GameResolve {
         bytes32 gameId;
@@ -21,14 +15,7 @@ contract TherundownConsumer is ChainlinkClient {
         uint8 statusId;
     }
 
-    /**
-    * @param _link the LINK token address
-    * @param _oracle the Operator.sol contract address
-    */
-    constructor(address _link, address _oracle) {
-        setChainlinkToken(_link);
-        setChainlinkOracle(_oracle);
-    }
+    bytes32 public latestRequest;
 
     // Mapping to store results
     mapping(bytes32 => bytes[]) public requestIdGames;
@@ -41,40 +28,56 @@ contract TherundownConsumer is ChainlinkClient {
      * @param _market the type of games we want to query (create or resolve).
      * @param _sportId the sportId of the sport to query.
      * @param _date the date for the games to be queried (format in epoch).
-     * @param _gameIds the IDs of the games to query (array of gameId).
-     * @param _statusIds the IDs of the statuses to query (array of statusId).
      */
 
-     function requestGames(
-         bytes32 _specId,
-         uint256 _payment, 
-         string memory _market
-         uint256 _sportId,
-         uint256 _date
-     ) public {
-         Chainlink.Request memory req = buildChainLinkRequest(_specId, address(this), this.fulfillGames.selector);
+    function requestGames(
+        bytes32 _specId,
+        uint256 _payment,
+        string memory _market,
+        uint256 _sportId,
+        uint256 _date
+    ) public {
+        Chainlink.Request memory req = buildChainlinkRequest(
+            _specId,
+            address(this),
+            this.fulfillGames.selector
+        );
 
-         req.addUint("date", _date);
-         req.add("market", _market);
-         req.addUint("sportId", _sportId);
-         sendChainlinkRequest(req, _payment);
-     }
+        req.addUint("date", _date);
+        req.add("market", _market);
+        req.addUint("sportId", _sportId);
+        sendChainlinkRequest(req, _payment);
+    }
 
     /* ========== CONSUMER FULFILL FUNCTIONS ========== */
 
-    function fulfillGames(bytes32 _requestId, bytes[] memory _games) public recordChainlinkFulfillment(_requestId) {
+    function fulfillGames(bytes32 _requestId, bytes[] memory _games)
+        public
+        recordChainlinkFulfillment(_requestId)
+    {
         requestIdGames[_requestId] = _games;
+        latestRequest = _requestId;
     }
 
     /* ========== OTHER FUNCTIONS ========== */
 
-    function getGamesCreated(bytes32 _requestId, uint256 _idx) external view returns (GameCreate memory) {
-        GameCreate memory game = abi.decode(requestIdGames[_requestId][_idx], (GameCreate));
-        return game;
+    function getLatestResults() public view returns (GameResolve memory) {
+        return
+            getGamesResolved(
+                latestRequest,
+                requestIdGames[latestRequest].length
+            );
     }
 
-    function getGamesResolved(bytes32 _requestId, uint256 _idx) external view returns (GameResolve memory) {
-        GameResolve memory game = abi.decode(requestIdGames[_requestId][_idx], (GameResolve));
+    function getGamesResolved(bytes32 _requestId, uint256 _idx)
+        public
+        view
+        returns (GameResolve memory)
+    {
+        GameResolve memory game = abi.decode(
+            requestIdGames[_requestId][_idx],
+            (GameResolve)
+        );
         return game;
     }
 
@@ -86,14 +89,20 @@ contract TherundownConsumer is ChainlinkClient {
         setChainlinkOracle(_oracle);
     }
 
-    function withdrawLink() public {
-        LinkTokenInterface linkToken = LinkTokenInterface(chainlinkTokenAddress());
-        require(linkToken.transfer(msg.sender, linkToken.balanceOf(address(this))), "Unable to transfer");
+    function setLink(address _token) external {
+        setChainlinkToken(_token);
     }
 
+    function withdrawLink() public {
+        LinkTokenInterface linkToken = LinkTokenInterface(
+            chainlinkTokenAddress()
+        );
+        require(
+            linkToken.transfer(msg.sender, linkToken.balanceOf(address(this))),
+            "Unable to transfer"
+        );
+    }
 }
-
-
 
 /**
  * Supported `sportId`

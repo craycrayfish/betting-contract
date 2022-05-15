@@ -16,4 +16,3 @@ def test_create_outcome_and_place_bet(check_local_blockchain_envs, bookie_contra
     assert bookie_contract.get_bets(account) == ((bet_outcome,), (bet_value,))
 
 
-def test_create
