@@ -1,9 +1,10 @@
-prgama solidity ^0.6.6
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
 contract TherundownConsumer is ChainlinkClient {
-    using Chainlink for Chainlink.Request
+    using Chainlink for Chainlink.Request;
 
     /* ========== CONSUMER STATE VARIABLES ========== */
 
@@ -41,18 +42,16 @@ contract TherundownConsumer is ChainlinkClient {
      * @param _market the type of games we want to query (create or resolve).
      * @param _sportId the sportId of the sport to query.
      * @param _date the date for the games to be queried (format in epoch).
-     * @param _gameIds the IDs of the games to query (array of gameId).
-     * @param _statusIds the IDs of the statuses to query (array of statusId).
      */
 
      function requestGames(
          bytes32 _specId,
          uint256 _payment, 
-         string memory _market
+         string memory _market,
          uint256 _sportId,
          uint256 _date
      ) public {
-         Chainlink.Request memory req = buildChainLinkRequest(_specId, address(this), this.fulfillGames.selector);
+         Chainlink.Request memory req = buildChainlinkRequest(_specId, address(this), this.fulfillGames.selector);
 
          req.addUint("date", _date);
          req.add("market", _market);
