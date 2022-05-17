@@ -1,5 +1,5 @@
 from scripts.helpful_scripts import get_account, fund_with_link
-from brownie import Bookie, RundownHandler, network, config
+from brownie import Bookie, APIConsumer, network, config
 from web3 import Web3
 
 
@@ -39,7 +39,5 @@ def deploy_rundown_handler():
         config[network.show_active()]["oracle_address"],
         {"from": account},
     )
+    fund_with_link()
     return rundown_handler
-
-
-def get_rundown_result()

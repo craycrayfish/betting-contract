@@ -56,7 +56,7 @@ contract Bookie is Ownable, ChainlinkConsumer {
 
     /* ==== INTERNAL STATE FUNCTIONS ======= */
 
-    function start_betting() public onlyOwner {
+    function startBetting() public onlyOwner {
         require(state == STATE.CLOSED, "Betting already started!");
         state = STATE.PRE_GAME;
     }
