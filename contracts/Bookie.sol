@@ -62,6 +62,7 @@ contract Bookie is Ownable, ChainlinkConsumer {
     }
 
     function addOutcome(GameResolve memory _gameState) public onlyOwner {
+        require(state != STATE.CLOSED, "Betting is over");
         outcomeCount += 1;
         outcomeStates[outcomeCount] = _gameState;
     }
